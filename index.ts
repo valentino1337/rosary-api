@@ -1,64 +1,43 @@
-// TODO dorobit /api/mysteries 
+import * as fs from 'fs' //na parse json files mysteries
 
 const currentDate = new Date()
 const dayOfWeek = currentDate.getDay()
 
+const joyfulRosary = JSON.stringify(JSON.parse(fs.readFileSync('mysteries/joyful.json', 'utf-8')))
+const sorrowfulRosary = JSON.stringify(JSON.parse(fs.readFileSync('mysteries/sorrowful.json', 'utf-8')))
+const luminousRosary = JSON.stringify(JSON.parse(fs.readFileSync('mysteries/luminous.json', 'utf-8')))
+const gloriousRosary = JSON.stringify(JSON.parse(fs.readFileSync('mysteries/glorious.json', 'utf-8')))
+
+function whichRosary() {
+  if (dayOfWeek === 0 || dayOfWeek === 3) {return new Response('{ "status": "success", rosary: "Glorious"}', {status:200})}
+  else if (dayOfWeek === 1 || dayOfWeek === 6) {return new Response('{ "status": "success", rosary: "Joyful"}', {status:200})}
+  else if (dayOfWeek === 2 || dayOfWeek === 5) {return new Response('{ "status": "success", rosary: "Sorrowful"}', {status:200})}
+  else if (dayOfWeek === 4) {return new Response('{ "status": "success", rosary: "Luminous"}', {status:200})}
+}
+
+function whichRosaryMysteries() {
+  if (dayOfWeek === 0 || dayOfWeek === 3) {return new Response(gloriousRosary, {status:200})}
+  if (dayOfWeek === 1 || dayOfWeek === 6) {return new Response(joyfulRosary, {status:200})}
+  if (dayOfWeek === 2 || dayOfWeek === 5) {return new Response(sorrowfulRosary, {status:200})}
+  if (dayOfWeek === 4) {return new Response(luminousRosary, {status:200})}
+}
+
+
 const server = Bun.serve({
-  hostname: "127.0.0.1",
+  hostname: "0.0.0.0",
   port: 8084,
   fetch(request: Request) {
+    const url = new URL(request.url)
+
     if (request.method === "GET") {
-      if (request.url.endsWith("/api")){//klasicky request
+      if (url.pathname === '/api'){ return whichRosary() }
+      if(url.pathname === '/api/mysteries'){ return whichRosaryMysteries()}
+      if (url.pathname === '/api/mysteries/joyful'){ return new Response(joyfulRosary)}
+      if (url.pathname === '/api/mysteries/sorrowful'){ return new Response(sorrowfulRosary)}
+      if (url.pathname === '/api/mysteries/luminous'){ return new Response(luminousRosary)}
+      if (url.pathname === '/api/mysteries/glorious'){ return new Response(gloriousRosary)}
 
-        if (request.url.endsWith('/api/mysteries')){// AJ TAJOMSTVA ///TODO este dat aj /api/mysteries/joyful atd
-          if (dayOfWeek === 0) {
-            return new Response('{ "status": "success", "day": "Sunday", rosary: "Glorious"}', {status:200})
-          }
-          else if (dayOfWeek === 1) {
-            return new Response('{ "status": "success", "day": "Monday", "rosary": "Joyful" }', {status:200})
-          }
-          else if (dayOfWeek === 2) {
-            return new Response('{ "status": "success", "day": "Tuesday", "rosary": "Sorrowful" }', {status:200})
-          }
-          else if (dayOfWeek === 3) {
-            return new Response('{ "status": "success", "day": "Wednesday", "rosary": "Glorious" }', {status:200})
-          }
-          else if (dayOfWeek === 4) {
-            return new Response('{ "status": "success", "day": "Thursday", "rosary": "Luminous" }', {status:200})
-          }
-          else if (dayOfWeek === 5) {
-            return new Response('{ "status": "success", "day": "Friday", "rosary": "Sorrowful" }', {status:200})
-          }
-          else if (dayOfWeek === 6) {
-            return new Response('{ "status": "success", "day": "Saturday", "rosary": "Joyful" }', {status:200})
-          }
-
-        } //IBA AKY RUZENEC SA MODLI
-        else {
-          if (dayOfWeek === 0) {
-            return new Response('{ "status": "success", "day": "Sunday", rosary: "Glorious"}', {status:200})
-          }
-          else if (dayOfWeek === 1) {
-            return new Response('{ "status": "success", "day": "Monday", "rosary": "Joyful" }', {status:200})
-          }
-          else if (dayOfWeek === 2) {
-            return new Response('{ "status": "success", "day": "Tuesday", "rosary": "Sorrowful" }', {status:200})
-          }
-          else if (dayOfWeek === 3) {
-            return new Response('{ "status": "success", "day": "Wednesday", "rosary": "Glorious" }', {status:200})
-          }
-          else if (dayOfWeek === 4) {
-            return new Response('{ "status": "success", "day": "Thursday", "rosary": "Luminous" }', {status:200})
-          }
-          else if (dayOfWeek === 5) {
-            return new Response('{ "status": "success", "day": "Friday", "rosary": "Sorrowful" }', {status:200})
-          }
-          else if (dayOfWeek === 6) {
-            return new Response('{ "status": "success", "day": "Saturday", "rosary": "Joyful" }', {status:200})
-          }
-        }
-      }
-      else { return new Response('Not found', {status: 404})}
+      else { return new Response('Wrong API endpoint.', {status: 404})}
     }
 
     else {
