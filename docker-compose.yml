@@ -1,0 +1,6 @@
+version: '3.3'
+services:
+    rosary-api:
+        image: ghcr.io/valentino1337/rosary-api
+        ports:
+            - '8084:8084'
