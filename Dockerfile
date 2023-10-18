@@ -1,5 +1,5 @@
 FROM oven/bun:debian
-WORKDIR /rosary-api
+WORKDIR rosary-api
 COPY . .
 RUN bun install
 CMD ["bun", "."]
